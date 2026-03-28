@@ -29,14 +29,14 @@ class CanvasSpec:
 
 
 
-CHARUCO_SQUARES_X = 6
-CHARUCO_SQUARES_Y = 8
+CHARUCO_SQUARES_X = 8
+CHARUCO_SQUARES_Y = 6
 CHARUCO_SQUARE_MM = 15.4    # physical square side length (mm)
 CHARUCO_MARKER_MM = 11.5    # must be < CHARUCO_SQUARE_MM (~75% = 11.55 mm)
 
 CANVAS_SPEC = CanvasSpec(
     width_mm   = 400.0,   # total canvas width (mm)
-    height_mm  = 450.0,   # total canvas height (mm)
+    height_mm  = 805.0,   # total canvas height (mm)
     spacing_mm = 5.0,     # distance between tuft points (mm)
 )
 
@@ -79,7 +79,7 @@ def detect_frame(zed_handle,
     import cv2.aruco as aruco
 
 
-    aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_250)
+    aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
     board = aruco.CharucoBoard(
         (CHARUCO_SQUARES_X, CHARUCO_SQUARES_Y),
         CHARUCO_SQUARE_MM,
