@@ -1,4 +1,4 @@
-#!/home/yusif/Desktop/Tufting/tuftgc/bin/python
+#!/home/yusif/Desktop/Tufting/tuftgc/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

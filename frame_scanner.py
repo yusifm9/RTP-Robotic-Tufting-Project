@@ -29,14 +29,14 @@ class CanvasSpec:
 
 
 
-CHARUCO_SQUARES_X = 7
-CHARUCO_SQUARES_Y = 5
+CHARUCO_SQUARES_X = 6
+CHARUCO_SQUARES_Y = 8
 CHARUCO_SQUARE_MM = 15.4    # physical square side length (mm)
 CHARUCO_MARKER_MM = 11.5    # must be < CHARUCO_SQUARE_MM (~75% = 11.55 mm)
 
 CANVAS_SPEC = CanvasSpec(
     width_mm   = 400.0,   # total canvas width (mm)
-    height_mm  = 805.0,   # total canvas height (mm)
+    height_mm  = 450.0,   # total canvas height (mm)
     spacing_mm = 5.0,     # distance between tuft points (mm)
 )
 
@@ -51,7 +51,7 @@ def init_camera() -> Dict: #starts the camera and gets params
     zed = sl.Camera()
     init_params = sl.InitParameters()
     init_params.coordinate_units = sl.UNIT.MILLIMETER
-    init_params.depth_mode = sl.DEPTH_MODE.ULTRA
+    init_params.depth_mode = sl.DEPTH_MODE.NEURAL
 
 
     status = zed.open(init_params)
@@ -59,7 +59,7 @@ def init_camera() -> Dict: #starts the camera and gets params
         raise RuntimeError(f"ZED failed to open: {status}")
 
 
-    calib = zed.get_camera_information().calibration_parameters.left_cam
+    calib = zed.get_camera_information().camera_configuration.calibration_parameters.left_cam
     K = np.array([
         [calib.fx,       0, calib.cx],
         [       0, calib.fy, calib.cy],
@@ -93,7 +93,7 @@ def detect_frame(zed_handle,
         image_zed = sl.Mat()
         zed_handle.retrieve_image(image_zed, sl.VIEW.LEFT)
         frame_bgr = image_zed.get_data()[:, :, :3]
- 
+
     gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY) #grayscale for easier & better detection
 
 
