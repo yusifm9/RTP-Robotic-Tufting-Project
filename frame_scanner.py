@@ -33,7 +33,7 @@ CHARUCO_MARKER_MM = 22.0    # physical marker side length (mm)
 BACKGROUND_THRESHOLD = 240  # pixels above this on all channels are skipped
 
 
-def init_camera() -> Dict:
+def init_camera() -> Dict: #starts the camera and gets params
     import pyzed.sl as sl
 
     zed = sl.Camera()
@@ -75,22 +75,22 @@ def detect_frame(zed_handle,
         image_zed = sl.Mat()
         zed_handle.retrieve_image(image_zed, sl.VIEW.LEFT)
         frame_bgr = image_zed.get_data()[:, :, :3]
+ 
+    gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY) #grayscale for easier & better detection
 
-    gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
-
-    detector = aruco.ArucoDetector(aruco_dict, aruco.DetectorParameters())
+    detector = aruco.ArucoDetector(aruco_dict, aruco.DetectorParameters()) #1st checks for aruco only
     corners, ids, _ = detector.detectMarkers(gray)
 
-    if ids is None or len(ids) == 0:
+    if ids is None or len(ids) == 0: #stops if didn`t find any
         return BoardPose(success=False)
 
-    charuco_detector = aruco.CharucoDetector(board)
+    charuco_detector = aruco.CharucoDetector(board) #2nd iteration, checks for charuco based on previous aruco detection
     charuco_corners, charuco_ids, _, _ = charuco_detector.detectBoard(gray)
 
-    if charuco_corners is None or len(charuco_corners) < 4:
+    if charuco_corners is None or len(charuco_corners) < 4: #at least 4 corners to solve pose
         return BoardPose(success=False)
 
-    success, rvec, tvec = aruco.estimatePoseCharucoBoard(
+    success, rvec, tvec = aruco.estimatePoseCharucoBoard( # PnP
         charuco_corners, charuco_ids, board,
         camera_model.K, camera_model.dist, None, None,
     )
@@ -129,7 +129,7 @@ def map_image(points_2d: np.ndarray,
     return points_2d[mask], colors_flat[mask]
 
 
-def canvas_to_3d(points_2d: np.ndarray, pose: BoardPose) -> np.ndarray:
+def canvas_to_3d(points_2d: np.ndarray, pose: BoardPose) -> np.ndarray: #transforms 2d points to 3d (based on pose of the board)
     import cv2
 
     R, _ = cv2.Rodrigues(pose.rvec)
