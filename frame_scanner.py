@@ -31,9 +31,14 @@ class CanvasSpec:
 
 CHARUCO_SQUARES_X = 7
 CHARUCO_SQUARES_Y = 5
-CHARUCO_SQUARE_MM = 15.4    # ✅ UPDATED: physical square side length (mm)
-CHARUCO_MARKER_MM = 11.5    # ✅ FIXED: must be < CHARUCO_SQUARE_MM (~75% = 11.55 mm)
+CHARUCO_SQUARE_MM = 15.4    # physical square side length (mm)
+CHARUCO_MARKER_MM = 11.5    # must be < CHARUCO_SQUARE_MM (~75% = 11.55 mm)
 
+CANVAS_SPEC = CanvasSpec(
+    width_mm   = 400.0,   # total canvas width (mm)
+    height_mm  = 805.0,   # total canvas height (mm)
+    spacing_mm = 5.0,     # distance between tuft points (mm)
+)
 
 BACKGROUND_THRESHOLD = 240  # pixels above this on all channels are skipped
 
@@ -122,7 +127,7 @@ def detect_frame(zed_handle,
 
 
 
-def build_grid(spec: CanvasSpec) -> np.ndarray:
+def build_grid(spec: CanvasSpec = CANVAS_SPEC) -> np.ndarray:
     nx = int(spec.width_mm  // spec.spacing_mm)
     ny = int(spec.height_mm // spec.spacing_mm)
 
@@ -137,8 +142,8 @@ def build_grid(spec: CanvasSpec) -> np.ndarray:
 
 
 def map_image(points_2d: np.ndarray,
-              spec: CanvasSpec,
-              image_path: str) -> Tuple[np.ndarray, np.ndarray]:
+              image_path: str,
+              spec: CanvasSpec = CANVAS_SPEC) -> Tuple[np.ndarray, np.ndarray]:
     from PIL import Image
 
 
